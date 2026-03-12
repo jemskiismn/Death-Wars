@@ -720,7 +720,6 @@
 
   <audio id="gameSoundtrack" src="./audio/game-soundtrack.mp3" loop></audio>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script>
     const SUPABASE_URL = 'https://oabxbnwlylwybyrivudq.supabase.co'
     const SUPABASE_KEY = 'sb_publishable_gtVXMXEqX4f3jbxiKaOvOw_qJLLLi59'
@@ -805,8 +804,12 @@
     async function openLeaderboard() {
       const screen = document.getElementById('leaderboardScreen')
       const list = document.getElementById('leaderboardList')
-      list.innerHTML = '<div style="font-size:7px;color:#555;letter-spacing:1px">Loading...</div>'
       screen.style.display = 'flex'
+      if (!sb) {
+        list.innerHTML = '<div style="font-size:7px;color:#555;letter-spacing:1px">Leaderboard unavailable</div>'
+        return
+      }
+      list.innerHTML = '<div style="font-size:7px;color:#555;letter-spacing:1px">Loading...</div>'
       const { data } = await sb.from('players').select('username,wins,losses').order('wins', { ascending: false }).limit(10)
       if (!data || data.length === 0) {
         list.innerHTML = '<div style="font-size:7px;color:#555;letter-spacing:1px">No players yet</div>'
@@ -839,30 +842,22 @@
         document.getElementById('walletScreen').style.display = 'flex'
       }
 
-      // Click always advances
+      // Click always advances after 3.5s (no dependency on audio.duration)
       splash.addEventListener('click', () => {
         audio.play().catch(() => {})
-        // Advance when audio ends, or after its duration, whichever comes first
-        audio.addEventListener('ended', showWallet, { once: true })
-        const dur = audio.duration
-        if (dur && isFinite(dur)) {
-          setTimeout(showWallet, dur * 1000 + 200)
-        } else {
-          setTimeout(showWallet, 5000) // fallback: 5s max
-        }
+        setTimeout(showWallet, 3500)
       }, { once: true })
 
-      // If autoplay works, still show click hint but advance on end too
+      // If autoplay works, advance naturally when audio ends
       audio.play().then(() => {
         audio.addEventListener('ended', showWallet, { once: true })
       }).catch(() => {})
     })
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"
-    integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/classes.js"></script>
   <script src="index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </body>
 </html>
