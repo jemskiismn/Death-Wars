@@ -851,14 +851,10 @@
       document.getElementById('walletScreen').style.display = 'flex'
     }
 
-    _splash.addEventListener('click', () => {
-      _audio.play().catch(() => {})
-      setTimeout(showWallet, 3500)
-    }, { once: true })
-
-    _audio.play().then(() => {
-      _audio.addEventListener('ended', showWallet, { once: true })
-    }).catch(() => {})
+    // Auto-advance after 2s — no click or audio required
+    setTimeout(showWallet, 2000)
+    // Click fast-forwards
+    _splash.addEventListener('click', showWallet, { once: true })
   </script>
 </body>
 </html>
