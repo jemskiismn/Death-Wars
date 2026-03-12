@@ -828,36 +828,36 @@
       document.getElementById('leaderboardScreen').style.display = 'none'
     }
 
-    window.addEventListener('load', () => {
-      try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY) } catch(e) {}
-      const audio = document.getElementById('splashAudio')
-      const splash = document.getElementById('splashScreen')
-      document.querySelector('.hud').style.visibility = 'hidden'
-
-      let advanced = false
-      function showWallet() {
-        if (advanced) return
-        advanced = true
-        splash.style.display = 'none'
-        document.getElementById('walletScreen').style.display = 'flex'
-      }
-
-      // Click always advances after 3.5s (no dependency on audio.duration)
-      splash.addEventListener('click', () => {
-        audio.play().catch(() => {})
-        setTimeout(showWallet, 3500)
-      }, { once: true })
-
-      // If autoplay works, advance naturally when audio ends
-      audio.play().then(() => {
-        audio.addEventListener('ended', showWallet, { once: true })
-      }).catch(() => {})
-    })
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/classes.js"></script>
   <script src="index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>
+    // Runs immediately — DOM ready, all scripts (including Supabase) already loaded.
+    // No window.load needed; that event fires only after all images/audio download
+    // which can take 10-30s on Vercel, causing the splash click to be silently missed.
+    try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY) } catch(e) {}
+    const _audio = document.getElementById('splashAudio')
+    const _splash = document.getElementById('splashScreen')
+    document.querySelector('.hud').style.visibility = 'hidden'
+
+    let _advanced = false
+    function showWallet() {
+      if (_advanced) return
+      _advanced = true
+      _splash.style.display = 'none'
+      document.getElementById('walletScreen').style.display = 'flex'
+    }
+
+    _splash.addEventListener('click', () => {
+      _audio.play().catch(() => {})
+      setTimeout(showWallet, 3500)
+    }, { once: true })
+
+    _audio.play().then(() => {
+      _audio.addEventListener('ended', showWallet, { once: true })
+    }).catch(() => {})
 </body>
 </html>
