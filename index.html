@@ -366,6 +366,120 @@
       text-align: center;
     }
 
+    /* ── Wallet / Username Screen ─────────────────────── */
+    #walletScreen, #usernameScreen {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(160deg, #060610 0%, #0e0620 55%, #060610 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      z-index: 25;
+    }
+
+    .wallet-title {
+      font-size: 18px;
+      color: #c8a84b;
+      text-shadow: 0 0 20px #c8a84b, 0 0 50px #c8a84b66;
+      letter-spacing: 5px;
+    }
+
+    .wallet-sub { font-size: 7px; color: #555; letter-spacing: 3px; }
+
+    .wallet-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .wallet-btn {
+      background: transparent;
+      border: 3px solid #333;
+      color: #666;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 9px;
+      padding: 12px 32px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: all 0.2s;
+      min-width: 240px;
+    }
+
+    .wallet-btn:hover { border-color: #555; color: #999; }
+    .wallet-btn.primary { border-color: #c8a84b88; color: #c8a84b; }
+    .wallet-btn.primary:hover { border-color: #c8a84b; box-shadow: 0 0 20px #c8a84b44; }
+
+    .wallet-status {
+      font-size: 6px;
+      color: #e74c3c;
+      letter-spacing: 1px;
+      min-height: 14px;
+      text-align: center;
+    }
+
+    .username-input {
+      background: #0e0e18;
+      border: 3px solid #333;
+      color: #ddd;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 9px;
+      padding: 10px 16px;
+      letter-spacing: 2px;
+      outline: none;
+      width: 280px;
+      text-align: center;
+    }
+
+    .username-input:focus { border-color: #c8a84b88; }
+
+    /* ── Leaderboard Screen ────────────────────────────── */
+    #leaderboardScreen {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(160deg, #060610 0%, #0e0620 55%, #060610 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 15;
+    }
+
+    #leaderboardList { display: flex; flex-direction: column; gap: 6px; width: 420px; }
+
+    .lb-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 7px;
+      padding: 8px 12px;
+      border: 1px solid #1e1e30;
+      background: #0e0e18;
+    }
+
+    .lb-rank   { color: #c8a84b; width: 28px; flex-shrink: 0; }
+    .lb-name   { color: #ddd; flex: 1; }
+    .lb-wins   { color: #e74c3c; width: 48px; text-align: right; flex-shrink: 0; }
+    .lb-losses { color: #3498db; width: 48px; text-align: right; flex-shrink: 0; }
+
+    .intro-lb-btn {
+      font-size: 6px;
+      color: #444;
+      letter-spacing: 2px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: 'Press Start 2P', cursive;
+      padding: 4px 0;
+      margin-top: 4px;
+    }
+
+    .intro-lb-btn:hover { color: #888; }
+
     /* ── Splash Screen ────────────────────────────────── */
     #splashScreen {
       position: absolute;
@@ -513,8 +627,36 @@
       <audio id="splashAudio" src="./audio/intro-sound.mp3"></audio>
     </div>
 
+    <!-- Wallet Screen -->
+    <div id="walletScreen" style="display:none">
+      <div class="wallet-title">&#9760; DEATH WARS &#9760;</div>
+      <div class="wallet-sub">— connect your wallet to compete —</div>
+      <div class="wallet-btns">
+        <button class="wallet-btn primary" onclick="connectWallet()">CONNECT WALLET</button>
+        <button class="wallet-btn" onclick="playAsGuest()">PLAY AS GUEST</button>
+      </div>
+      <div id="walletStatus" class="wallet-status"></div>
+    </div>
+
+    <!-- Username Screen -->
+    <div id="usernameScreen" style="display:none">
+      <div class="wallet-title">CHOOSE YOUR NAME</div>
+      <div class="wallet-sub">— shown on the leaderboard —</div>
+      <input id="usernameInput" class="username-input" placeholder="2–16 characters" maxlength="16"
+        onkeydown="if(event.key==='Enter') submitUsername()" />
+      <button class="wallet-btn primary" onclick="submitUsername()">CONFIRM</button>
+      <div id="usernameError" class="wallet-status"></div>
+    </div>
+
+    <!-- Leaderboard Screen -->
+    <div id="leaderboardScreen" style="display:none">
+      <div class="select-title">— LEADERBOARD —</div>
+      <div id="leaderboardList"></div>
+      <button class="wallet-btn" style="margin-top:8px" onclick="closeLeaderboard()">CLOSE</button>
+    </div>
+
     <!-- Intro / Preview -->
-    <div id="introScreen">
+    <div id="introScreen" style="display:none">
       <div class="intro-left">
         <img id="introChar" src="./img/death_adventure_time_updated-removebg-preview.png" alt="Death" />
       </div>
@@ -528,6 +670,7 @@
           <div class="ctrl-row"><span class="ctrl-key">ENTER</span> Confirm selection</div>
         </div>
         <div class="intro-press">PRESS ENTER TO PLAY</div>
+        <button class="intro-lb-btn" onclick="openLeaderboard()">LEADERBOARD</button>
       </div>
     </div>
 
@@ -577,6 +720,10 @@
   <audio id="gameSoundtrack" src="./audio/game-soundtrack.mp3" loop></audio>
 
   <script>
+    const SUPABASE_URL = 'https://oabxbnwlylwybyrivudq.supabase.co'
+    const SUPABASE_KEY = 'sb_publishable_gtVXMXEqX4f3jbxiKaOvOw_qJLLLi59'
+    let sb
+
     const _clickCtx = new (window.AudioContext || window.webkitAudioContext)()
     function playClick() {
       const ctx = _clickCtx
@@ -596,7 +743,88 @@
       src.start()
     }
 
+    async function connectWallet() {
+      const statusEl = document.getElementById('walletStatus')
+      const provider = window.phantom?.solana || window.solana
+      if (!provider?.isPhantom) {
+        statusEl.textContent = 'Phantom not found — install at phantom.app'
+        return
+      }
+      statusEl.textContent = 'Connecting...'
+      try {
+        const resp = await provider.connect()
+        const addr = resp.publicKey.toString()
+        const { data } = await sb.from('players').select('username').eq('wallet_address', addr).maybeSingle()
+        if (data) {
+          walletAddress = addr
+          walletUsername = data.username
+          proceedToGame()
+        } else {
+          walletAddress = addr
+          statusEl.textContent = ''
+          document.getElementById('walletScreen').style.display = 'none'
+          document.getElementById('usernameScreen').style.display = 'flex'
+          setTimeout(() => document.getElementById('usernameInput').focus(), 50)
+        }
+      } catch(e) {
+        statusEl.textContent = 'Connection cancelled'
+      }
+    }
+
+    async function submitUsername() {
+      const val = document.getElementById('usernameInput').value.trim()
+      const errEl = document.getElementById('usernameError')
+      if (val.length < 2 || val.length > 16) {
+        errEl.textContent = 'Name must be 2–16 characters'
+        return
+      }
+      errEl.textContent = 'Saving...'
+      const { error } = await sb.from('players').insert({ wallet_address: walletAddress, username: val })
+      if (error) {
+        errEl.textContent = 'Error saving — try again'
+        return
+      }
+      walletUsername = val
+      proceedToGame()
+    }
+
+    function playAsGuest() {
+      isGuest = true
+      proceedToGame()
+    }
+
+    function proceedToGame() {
+      document.getElementById('walletScreen').style.display = 'none'
+      document.getElementById('usernameScreen').style.display = 'none'
+      document.getElementById('introScreen').style.display = 'flex'
+      gameState = 'intro'
+    }
+
+    async function openLeaderboard() {
+      const screen = document.getElementById('leaderboardScreen')
+      const list = document.getElementById('leaderboardList')
+      list.innerHTML = '<div style="font-size:7px;color:#555;letter-spacing:1px">Loading...</div>'
+      screen.style.display = 'flex'
+      const { data } = await sb.from('players').select('username,wins,losses').order('wins', { ascending: false }).limit(10)
+      if (!data || data.length === 0) {
+        list.innerHTML = '<div style="font-size:7px;color:#555;letter-spacing:1px">No players yet</div>'
+        return
+      }
+      list.innerHTML = data.map((p, i) => `
+        <div class="lb-row">
+          <span class="lb-rank">#${i + 1}</span>
+          <span class="lb-name">${p.username}</span>
+          <span class="lb-wins">${p.wins}W</span>
+          <span class="lb-losses">${p.losses}L</span>
+        </div>`).join('')
+    }
+
+    function closeLeaderboard() {
+      document.getElementById('leaderboardScreen').style.display = 'none'
+    }
+
     window.addEventListener('load', () => {
+      sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
       const audio = document.getElementById('splashAudio')
       const splash = document.getElementById('splashScreen')
       const hud = document.querySelector('.hud')
@@ -604,9 +832,11 @@
       audio.play()
       audio.addEventListener('ended', () => {
         splash.style.display = 'none'
+        document.getElementById('walletScreen').style.display = 'flex'
       })
     })
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"
     integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>

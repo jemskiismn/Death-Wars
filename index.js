@@ -77,7 +77,10 @@ const BACKGROUNDS = [
 let bgCursor = 0
 
 // ─── Game State ───────────────────────────────────────────────────────────────
-let gameState = 'intro'   // 'intro' | 'selecting' | 'countdown' | 'fighting' | 'gameover'
+let gameState = 'wallet'  // 'wallet' | 'intro' | 'selecting' | 'countdown' | 'fighting' | 'gameover'
+let walletAddress = null
+let walletUsername = null
+let isGuest = false
 let player = null
 let enemy = null
 
@@ -314,6 +317,8 @@ animate()
 
 // ─── Keyboard Handlers ────────────────────────────────────────────────────────
 window.addEventListener('keydown', (event) => {
+  if (gameState === 'wallet') return
+
   // Intro screen — any Enter dismisses it
   if (gameState === 'intro') {
     if (event.key === 'Enter') {

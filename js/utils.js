@@ -28,6 +28,16 @@ function determineWinner({ player, enemy, timerId }) {
   } else {
     displayEl.innerHTML = p2Name + ' WINS'
   }
+
+  // Record win/loss for connected wallet player
+  if (typeof walletAddress !== 'undefined' && walletAddress && !isGuest && typeof sb !== 'undefined') {
+    const col = player.health > enemy.health ? 'wins' : player.health < enemy.health ? 'losses' : null
+    if (col) {
+      sb.from('players').select(col).eq('wallet_address', walletAddress).single().then(({ data }) => {
+        if (data) sb.from('players').update({ [col]: data[col] + 1 }).eq('wallet_address', walletAddress)
+      })
+    }
+  }
 }
 
 let timer = 60
