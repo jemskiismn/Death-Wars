@@ -829,10 +829,20 @@
       const splash = document.getElementById('splashScreen')
       const hud = document.querySelector('.hud')
       hud.style.visibility = 'hidden'
-      audio.play()
-      audio.addEventListener('ended', () => {
+      function showWallet() {
         splash.style.display = 'none'
         document.getElementById('walletScreen').style.display = 'flex'
+      }
+      audio.addEventListener('ended', showWallet)
+      audio.play().catch(() => {
+        // Autoplay blocked — show a click-to-start prompt on the splash
+        splash.style.cursor = 'pointer'
+        splash.addEventListener('click', () => {
+          audio.play().catch(() => {})
+          audio.addEventListener('ended', showWallet)
+          // If audio still fails, advance after a short wait
+          setTimeout(() => { if (splash.style.display !== 'none') showWallet() }, 500)
+        }, { once: true })
       })
     })
   </script>
