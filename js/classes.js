@@ -20,6 +20,7 @@ class Sprite {
   }
 
   draw() {
+    if (!this.image.complete || this.image.naturalWidth === 0) return
     c.drawImage(
       this.image,
       this.framesCurrent * (this.image.width / this.framesMax),
