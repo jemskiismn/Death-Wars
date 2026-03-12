@@ -622,8 +622,9 @@
     <canvas></canvas>
 
     <!-- Splash Screen -->
-    <div id="splashScreen">
+    <div id="splashScreen" style="cursor:pointer; flex-direction:column; gap:12px">
       <img id="splashImg" src="./img/intro-image.png" alt="" />
+      <div id="splashClickHint" style="font-size:8px; color:#c8a84b88; letter-spacing:3px; animation:introBlink 1.2s ease-in-out infinite">CLICK TO START</div>
       <audio id="splashAudio" src="./audio/intro-sound.mp3"></audio>
     </div>
 
@@ -719,6 +720,7 @@
 
   <audio id="gameSoundtrack" src="./audio/game-soundtrack.mp3" loop></audio>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script>
     const SUPABASE_URL = 'https://oabxbnwlylwybyrivudq.supabase.co'
     const SUPABASE_KEY = 'sb_publishable_gtVXMXEqX4f3jbxiKaOvOw_qJLLLi59'
@@ -824,29 +826,38 @@
     }
 
     window.addEventListener('load', () => {
-      sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+      try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY) } catch(e) {}
       const audio = document.getElementById('splashAudio')
       const splash = document.getElementById('splashScreen')
-      const hud = document.querySelector('.hud')
-      hud.style.visibility = 'hidden'
+      document.querySelector('.hud').style.visibility = 'hidden'
+
+      let advanced = false
       function showWallet() {
+        if (advanced) return
+        advanced = true
         splash.style.display = 'none'
         document.getElementById('walletScreen').style.display = 'flex'
       }
-      audio.addEventListener('ended', showWallet)
-      audio.play().catch(() => {
-        // Autoplay blocked — show a click-to-start prompt on the splash
-        splash.style.cursor = 'pointer'
-        splash.addEventListener('click', () => {
-          audio.play().catch(() => {})
-          audio.addEventListener('ended', showWallet)
-          // If audio still fails, advance after a short wait
-          setTimeout(() => { if (splash.style.display !== 'none') showWallet() }, 500)
-        }, { once: true })
-      })
+
+      // Click always advances
+      splash.addEventListener('click', () => {
+        audio.play().catch(() => {})
+        // Advance when audio ends, or after its duration, whichever comes first
+        audio.addEventListener('ended', showWallet, { once: true })
+        const dur = audio.duration
+        if (dur && isFinite(dur)) {
+          setTimeout(showWallet, dur * 1000 + 200)
+        } else {
+          setTimeout(showWallet, 5000) // fallback: 5s max
+        }
+      }, { once: true })
+
+      // If autoplay works, still show click hint but advance on end too
+      audio.play().then(() => {
+        audio.addEventListener('ended', showWallet, { once: true })
+      }).catch(() => {})
     })
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"
     integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
